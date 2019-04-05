@@ -4,7 +4,7 @@
  * @description  nzBankAccountValidator
  *
  * CHANGE LOG
- * 2019-04-01 - Initial Setup of nzBankAccountValidator
+ * 2019-04-05 - Initial Setup of nzBankAccountValidator
  **/
 import {LightningElement, api, wire, track} from 'lwc';
 import { getRecord, updateRecord } from 'lightning/uiRecordApi';
@@ -242,7 +242,7 @@ export default class NzBankAccountValidator extends LightningElement {
             this.branch !== this.record.fields.Bank_Branch_Code__c.value ||
             this.account !== this.record.fields.Bank_Account_Code__c.value ||
             this.suffix !== this.record.fields.Bank_Suffix_Code__c.value
-        );
+        ) && this.isValidNZBankAccount;
     }
 
     // Determine if we have a valid Bank Code / Number
@@ -346,17 +346,17 @@ export default class NzBankAccountValidator extends LightningElement {
         let value = event.target.value;
         // Now set the value based on the name
         if (field === 'bank') {
-            if (this.suffix !== value) {
+            if (this.bank !== value) {
                 this.bank = value;
                 if (this.isValidBank) this.focusBySelector('.branchInput');
             }
         } else if (field === 'branch') {
-            if (this.suffix !== value) {
+            if (this.branch !== value) {
                 this.branch = value;
                 if (this.isValidBranch) this.focusBySelector('.accountInput');
             }
         } else if (field === 'account') {
-            if (this.suffix !== value) {
+            if (this.account !== value) {
                 this.account = value;
                 if (this.isValidAccount) this.focusBySelector('.suffixInput');
             }
