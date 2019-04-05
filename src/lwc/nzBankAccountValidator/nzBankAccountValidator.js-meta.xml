@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>45.0</apiVersion>
+    <description>A small lightning web component for validating NZ bank account numbers</description>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>   
+        <targetConfig targets="lightning__RecordPage">
+            <property name="strTitle" type="String" default="NZ Bank Account Validator" label="Enter the title"/>
+            <property name="accountSeparator" type="String" default="-" label="Enter the full account separator"/>
+        </targetConfig>
+    </targetConfigs>
+    <masterLabel>NZ Bank Account Validator</masterLabel>
+</LightningComponentBundle>

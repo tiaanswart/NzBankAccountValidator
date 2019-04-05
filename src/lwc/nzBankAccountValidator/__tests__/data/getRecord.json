@@ -1,0 +1,16 @@
+{
+  "fields": {
+    "Bank_Code__c": {
+      "value": "01"
+    },
+    "Bank_Branch_Code__c": {
+      "value": "0001"
+    },
+    "Bank_Account_Code__c": {
+      "value": "000001"
+    },
+    "Bank_Suffix_Code__c": {
+      "value": "00"
+    }
+  }
+}

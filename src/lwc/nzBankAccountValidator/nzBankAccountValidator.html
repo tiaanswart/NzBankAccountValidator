@@ -1,0 +1,101 @@
+<!--
+  /**
+   * nzBankAccountValidator Markup
+   * Description: nzBankAccountValidator
+   * @author: Tiaan Swart (tswart@deloitte.co.nz)
+   * @date: 2019-04-05
+   **/
+ -->
+<template>
+    <lightning-card title={strTitle} variant="base">
+        <lightning-button class="slds-m-top_small slds-theme_brand"
+                          variant="brand" label="Save"
+                          slot="actions"
+                          if:true={hasChanged}
+                          onclick={updateRecord}></lightning-button>
+        <div class="slds-card__body_inner">
+            <div class="slds-form slds-form_stacked">
+                <lightning-layout>
+                    <lightning-layout-item size="1">
+                        <div class="slds-form-element" if:true={hasBankImg}>
+                            <label class="slds-form-element__label hideLabel">Bank</label>
+                            <div class="slds-form-element__control">
+                                <img width="16" height="16" class="slds-m-around_x-small" src={bankImg}>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2">
+                        <div class={bankClasses}>
+                            <label class="slds-form-element__label" for="bank">Bank</label>
+                            <div class="slds-form-element__control">
+                                <input maxlength="2"
+                                       name="bank"
+                                       placeholder="XX"
+                                       class="slds-input slds-text-align_center bankInput"
+                                       type="text"
+                                       value={bank}
+                                       onkeyup={handleKeyUp} />
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="3">
+                        <div class={branchClasses}>
+                            <label class="slds-form-element__label" for="branch">Branch</label>
+                            <div class="slds-form-element__control">
+                                <input maxlength="4"
+                                       name="branch"
+                                       placeholder="XXXX"
+                                       class="slds-input slds-text-align_center branchInput"
+                                       type="text"
+                                       value={branch}
+                                       onkeyup={handleKeyUp} />
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="3">
+                        <div class={accountClasses}>
+                            <label class="slds-form-element__label" for="account">Account</label>
+                            <div class="slds-form-element__control">
+                                <input maxlength="6"
+                                       name="account"
+                                       placeholder="XXXXXX"
+                                       class="slds-input slds-text-align_center accountInput"
+                                       type="text"
+                                       value={account}
+                                       onkeyup={handleKeyUp} />
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2">
+                        <div class={suffixClasses}>
+                            <label class="slds-form-element__label" for="suffix">Suffix</label>
+                            <div class="slds-form-element__control">
+                                <input maxlength="2"
+                                       name="suffix"
+                                       placeholder="XX"
+                                       class="slds-input slds-text-align_center suffixInput"
+                                       type="text"
+                                       value={suffix}
+                                       onkeyup={handleKeyUp} />
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="1">
+                        <div class="slds-form-element" if:true={isValidNZBankAccount}>
+                            <label class="slds-form-element__label hideLabel">Copy</label>
+                            <div class="slds-form-element__control">
+                                <lightning-button-icon class="copyButton"
+                                                       icon-name={copyIcon}
+                                                       alternative-text="Copy to clipboard"
+                                                       onclick={handleCopy}></lightning-button-icon>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </div>
+        <p slot="footer">
+            {bankName} - {accountTypeName}
+        </p>
+    </lightning-card>
+</template>
