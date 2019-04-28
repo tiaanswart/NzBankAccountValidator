@@ -10,6 +10,14 @@
         <targetConfig targets="lightning__RecordPage">
             <property name="strTitle" type="String" default="NZ Bank Account Validator" label="Enter the title"/>
             <property name="accountSeparator" type="String" default="-" label="Enter the full account separator"/>
+            <property name="sObject" type="String" label="Enter the SObject API Name"/>
+            <property name="bankField" type="String" label="Enter the Bank field"/>
+            <property name="branchField" type="String" label="Enter the Branch field"/>
+            <property name="accountField" type="String" label="Enter the Account field"/>
+            <property name="suffixField" type="String" label="Enter the Suffix (Account Type) field"/>
+            <property name="fullBankAccountField" type="String" label="Enter the Full Bank Account field"/>
+            <property name="bankNameField" type="String" label="Enter the Bank Name field"/>
+            <property name="suffixNameField" type="String" label="Enter the Suffix (Account Type) Name field"/>
         </targetConfig>
     </targetConfigs>
     <masterLabel>NZ Bank Account Validator</masterLabel>

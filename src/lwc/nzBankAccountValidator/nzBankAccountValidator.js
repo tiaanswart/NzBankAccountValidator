@@ -4,203 +4,39 @@
  * @description  nzBankAccountValidator
  *
  * CHANGE LOG
- * 2019-04-05 - Initial Setup of nzBankAccountValidator
+ * 2019-04-01 - Initial Setup of nzBankAccountValidator
  **/
-import {LightningElement, api, wire, track} from 'lwc';
-import { getRecord, updateRecord } from 'lightning/uiRecordApi';
+// Lighting Web Component Imports
+import { LightningElement, api, wire, track } from 'lwc';
+import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-// Map of NZ Banks with their codes and icons
-const nzBanks = [
-    {
-        "bankNumber": "01",
-        "bankName": "ANZ Bank New Zealand",
-        "bankImg" : "https://www.anz.co.nz/etc/designs/commons/images/appicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "02",
-        "bankName": "Bank of New Zealand",
-        "bankImg" : "https://www.bnz.co.nz/favicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "03",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "04",
-        "bankName": "ANZ Bank New Zealand",
-        "bankImg" : "https://www.anz.co.nz/etc/designs/commons/images/appicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "05",
-        "bankName": "China Construction Bank NZ Ltd",
-        "bankImg" : "http://nz.ccb.com/favicon.ico"
-    },
-    {
-        "bankNumber": "06",
-        "bankName": "ANZ Bank New Zealand",
-        "bankImg" : "https://www.anz.co.nz/etc/designs/commons/images/appicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "08",
-        "bankName": "Bank of New Zealand",
-        "bankImg" : "https://www.bnz.co.nz/favicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "10",
-        "bankName": "Industrial and Commercial Bank of China (New Zealand) Ltd"
-    },
-    {
-        "bankNumber": "11",
-        "bankName": "ANZ Bank New Zealand",
-        "bankImg" : "https://www.anz.co.nz/etc/designs/commons/images/appicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "12",
-        "bankName": "ASB Bank",
-        "bankImg" : "https://www.asb.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "13",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "14",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "15",
-        "bankName": "TSB Bank",
-        "bankImg" : "https://www.tsb.co.nz/sites/default/files/TSBBank_Favicon_0.png"
-    },
-    {
-        "bankNumber": "16",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "17",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "18",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "19",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "20",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "21",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "22",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "23",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "24",
-        "bankName": "ASB Bank",
-        "bankImg" : "https://www.asb.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "25",
-        "bankName": "ANZ Bank New Zealand",
-        "bankImg" : "https://www.anz.co.nz/etc/designs/commons/images/appicons/favicon-32x32.png"
-    },
-    {
-        "bankNumber": "27",
-        "bankName": "Westpac",
-        "bankImg" : "https://www.westpac.co.nz/favicon.ico"
-    },
-    {
-        "bankNumber": "30",
-        "bankName": "HSBC New Zealand",
-        "bankImg" : "https://www.hsbc.co.nz/assets/BaseKit/images/favicon.ico"
-    },
-    {
-        "bankNumber": "31",
-        "bankName": "Citibank N.A.",
-        "bankImg" : "https://www.citigroup.com/favicon.ico"
-    },
-    {
-        "bankNumber": "38",
-        "bankName": "Kiwibank",
-        "bankImg" : "https://media.kiwibank.co.nz/static/favicon.ico"
-    },
-    {
-        "bankNumber": "88",
-        "bankName": "Bank of China NZ Ltd"
-    }
-];
+// Bank account validation service
+import * as ValidationService from 'c/nzBankAccountValidationService';
 
-// Map of NZ Bank Account Types
-const nzBankAccountTypes = [
-    {
-        "name": "Cheque Account",
-        "code": "00"
-    },
-    {
-        "name": "Credit Card Account",
-        "code": "40"
-    },
-    {
-        "name": "Fixed Account",
-        "code": "03"
-    },
-    {
-        "name": "Number 2 Account",
-        "code": "02"
-    },
-    {
-        "name": "Savings Account",
-        "code": "30"
-    },
-    {
-        "name": "Term Deposit Account",
-        "code": "81"
-    },
-    {
-        "name": "Thrift Club Account",
-        "code": "50"
-    }
-];
-
-// Fields to use for integration
-const fields = [
-    'Account.Bank_Code__c',
-    'Account.Bank_Branch_Code__c',
-    'Account.Bank_Account_Code__c',
-    'Account.Bank_Suffix_Code__c',
-    'Account.Full_Bank_Account_Number__c',
-];
+// Import the Bank Images
+import NZBankImages from '@salesforce/resourceUrl/NZBankImages';
 
 // Export the Lightning Web Component
 export default class NzBankAccountValidator extends LightningElement {
+
     // Config
     @api strTitle;
     @api accountSeparator;
+    @api sObject;
+    @api bankField;
+    @api branchField;
+    @api accountField;
+    @api suffixField;
+    @api fullBankAccountField;
+    @api bankNameField;
+    @api suffixNameField;
 
     // Record props
     @api recordId;
+    @api recordApi;
+    @api recordApiBank;
+    @track recordFields = [];
     @track record;
     @track error;
     @track bank;
@@ -210,17 +46,45 @@ export default class NzBankAccountValidator extends LightningElement {
 
     // Track changes to our main properties that will need to be binded to HTML
     @track copyIcon = 'utility:copy_to_clipboard';
+    @track isLoading = true;
+    @track isSaving = false;
+    @track showBranchInfo = false;
+
+    // Validation response
+    @track validationObj;
+
+    // Web Component Init
+    connectedCallback() {
+        // Add the fields if we have any
+        if (this.sObject) {
+            if (this.bankField) this.recordFields.push(this.sObject + '.' + this.bankField);
+            if (this.branchField) this.recordFields.push(this.sObject + '.' + this.branchField);
+            if (this.accountField) this.recordFields.push(this.sObject + '.' + this.accountField);
+            if (this.suffixField) this.recordFields.push(this.sObject + '.' + this.suffixField);
+            if (this.fullBankAccountField) this.recordFields.push(this.sObject + '.' + this.fullBankAccountField);
+            if (this.bankNameField) this.recordFields.push(this.sObject + '.' + this.bankNameField);
+            if (this.suffixNameField) this.recordFields.push(this.sObject + '.' + this.suffixNameField);
+        }
+    }
 
     // Get the Record
-    @wire(getRecord, { recordId: '$recordId', fields })
+    @wire(getRecord, { recordId: '$recordId', optionalFields: '$recordFields' })
     wiredRecord({ error, data }) {
+        this.recordApi = 'wiredRecord';
+        this.isLoading = true;
         if (data) {
             this.record = data;
-            this.bank = data.fields.Bank_Code__c.value;
-            this.branch = data.fields.Bank_Branch_Code__c.value;
-            this.account = data.fields.Bank_Account_Code__c.value;
-            this.suffix = data.fields.Bank_Suffix_Code__c.value;
+            this.recordApi = data;
+            if (this.sObject) {
+                if (this.bankField) this.bank = getFieldValue(this.record, this.sObject + '.' + this.bankField);
+                if (this.bankField) this.recordApiBank = getFieldValue(this.record, this.sObject + '.' + this.bankField);
+                if (this.branchField) this.branch = getFieldValue(this.record, this.sObject + '.' + this.branchField);
+                if (this.accountField) this.account = getFieldValue(this.record, this.sObject + '.' + this.accountField);
+                if (this.suffixField) this.suffix = getFieldValue(this.record, this.sObject + '.' + this.suffixField);
+            }
             this.error = undefined;
+            // Always re-validate
+            this.validate();
         } else if (error) {
             this.error = 'Unknown error';
             if (Array.isArray(error.body)) {
@@ -232,42 +96,67 @@ export default class NzBankAccountValidator extends LightningElement {
             this.branch = undefined;
             this.account = undefined;
             this.suffix = undefined;
+            console.error('getRecord error', this.error);
+            this.recordApi = this.error;
         }
+        this.isLoading = false;
+    }
+
+    // Show spinner error property
+    get showSpinner() {
+        return this.isLoading || this.isSaving;
+    }
+
+    // Has error property
+    get hasError() {
+        return !!this.error;
     }
 
     // Has changed property
     get hasChanged() {
-        return this.record && (
-            this.bank !== this.record.fields.Bank_Code__c.value ||
-            this.branch !== this.record.fields.Bank_Branch_Code__c.value ||
-            this.account !== this.record.fields.Bank_Account_Code__c.value ||
-            this.suffix !== this.record.fields.Bank_Suffix_Code__c.value
-        ) && this.isValidNZBankAccount;
+        return this.record && this.sObject && (
+            (this.bankField && this.bank !== getFieldValue(this.record, this.sObject + '.' + this.bankField)) ||
+            (this.branchField && this.branch !== getFieldValue(this.record, this.sObject + '.' + this.branchField)) ||
+            (this.accountField && this.account !== getFieldValue(this.record, this.sObject + '.' + this.accountField)) ||
+            (this.suffixField && this.suffix !== getFieldValue(this.record, this.sObject + '.' + this.suffixField)) ||
+            (this.fullBankAccountField && this.fullNZBankAccountNumber !== getFieldValue(this.record, this.sObject + '.' + this.fullBankAccountField)) ||
+            (this.bankNameField && this.bankName !== getFieldValue(this.record, this.sObject + '.' + this.bankNameField)) ||
+            (this.suffixNameField && this.accountTypeName !== getFieldValue(this.record, this.sObject + '.' + this.suffixNameField)));
+    }
+
+    //Check if we can save, we need fields
+    get canSave() {
+        return this.hasChanged && !!this.recordFields.length;
     }
 
     // Determine if we have a valid Bank Code / Number
     get isValidBank() {
-        return this.bank && this.bank.length === 2 && nzBanks.filter(b => b.bankNumber === this.bank).length;
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.bank && this.bank.length === 2 && this.validationObj && this.validationObj.id;
     }
 
     // Determine if we have a valid Branch Code / Number
     get isValidBranch() {
-        return this.branch && this.branch.length === 4 && !isNaN(this.branch) && parseInt(this.branch) > 0;
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.branch && this.branch.length === 4 && this.validationObj && this.validationObj.branch;
     }
 
     // Determine if we have a valid Account Code / Number
     get isValidAccount() {
-        return this.account && this.account.length === 6 && !isNaN(this.account) && parseInt(this.account) > 0;
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.account && this.account.length >= 6 && this.validationObj && this.validationObj.base;
     }
 
     // Determine if we have a valid Bank Account Type (Suffix) Code / Number
     get isValidSuffix() {
-        return this.suffix && this.suffix.length === 2 && nzBankAccountTypes.filter(b => b.code === this.suffix).length;
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.suffix && this.suffix.length >= 2 && this.validationObj && this.validationObj.suffix;
     }
 
     // Determine if the entire account number is valid
     get isValidNZBankAccount() {
-        return this.isValidBank && this.isValidBranch && this.isValidAccount && this.isValidSuffix;
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.validationObj ? Object.keys(this.validationObj).every((k) => { return this.validationObj[k] }) : false;
     }
 
     // Show a UI Message
@@ -280,20 +169,25 @@ export default class NzBankAccountValidator extends LightningElement {
         this.dispatchEvent(event);
     }
 
-    // Get the NZ Bank Object
-    getBankObj() {
-        const theBank = this.bank ? nzBanks.filter(b => b.bankNumber === this.bank) : null;
-        return theBank;
+    // Use validation service
+    validate() {
+        const validationResponse = ValidationService.validate(this.fullNZBankAccountNumber);
+        const self = this;
+        // Handle Promise and Non-Promise responses (Testing)
+        Promise.resolve(validationResponse).then(function(resp) {
+            self.validationObj = resp;
+        }).catch(err => console.error(err));
     }
 
-    // Determine if we have an image for this bank to display
-    get hasBankImg() {
-        return this.isValidBank && this.getBankObj()[0].bankImg;
+    // Get the NZ Bank Object
+    getBankObj() {
+        if (!this.validationObj || !Object.keys(this.validationObj).length) this.validate();
+        return this.validationObj ? this.validationObj.idData : null;
     }
 
     // Get the Bank image
     get bankImg() {
-        return this.isValidBank ? this.getBankObj()[0].bankImg : null;
+        return this.isValidBank ? `${NZBankImages}/NZBankImages/${this.bank}.png` : null;
     }
 
     // Get the classes with an error class if invalid
@@ -318,24 +212,77 @@ export default class NzBankAccountValidator extends LightningElement {
 
     // Get the Bank Name to display in the footer
     get bankName() {
-        return this.isValidBank ? this.getBankObj()[0].bankName : 'No bank found';
+        const bankObj = this.isValidBank ? this.getBankObj() : null;
+        return bankObj ? bankObj.Bank_Name : 'No bank found';
     }
 
     // Get the Account Type Name to display in the footer
     get accountTypeName() {
-        const theAccountType = this.suffix && this.isValidSuffix ? nzBankAccountTypes.filter(b => b.code === this.suffix) : null;
-        return theAccountType && theAccountType.length ? theAccountType[0].name : 'No account type found';
+        const suffixObj = this.isValidSuffix ? this.validationObj.suffixData : null;
+        return suffixObj ? suffixObj.name : 'No account type found';
     }
 
     // Get the Full Account Number
     get fullNZBankAccountNumber() {
-        return this.isValidNZBankAccount ? [this.bank, this.branch, this.account, this.suffix].join(this.accountSeparator) : '';
+        return this.accountSeparator ? [this.bank, this.branch, this.account, this.suffix].join(this.accountSeparator) : '';
+    }
+
+    // Make sure we can show branch details
+    get canShowBranchInfo() {
+        return this.isValidBank && this.isValidBranch && !this.showBranchInfo && !!this.validationObj;
+    }
+
+    // Get the Branch Name
+    get branchName() {
+        const bd = this.validationObj.branchData;
+        return !!bd ? bd.Branch_Information : '';
+    }
+
+    // Get a well formatted address for a Branch
+    get branchAddress() {
+        const bd = this.validationObj.branchData;
+        return !!bd ? [bd.Physical_Address1, bd.City, bd.Country_Name].filter(a => !!a).join(', ') : '';
+    }
+
+    // Get a well formatted address for a Branch
+    get branchPhone() {
+        const bd = this.validationObj.branchData;
+        return !!bd ? [!!bd.Phone.indexOf('0800') ? bd.STD : '', bd.Phone].filter(a => !!a).join(' ') : '';
+    }
+
+    // Get a map marker for the Branch
+    get canShowBranchAddressMap() {
+        const bd = this.validationObj.branchData;
+        return !!bd && !!bd.Physical_Address1 && !!bd.City;
+    }
+
+    // Get a map marker for the Branch
+    get branchAddressMarker() {
+        const bd = this.validationObj.branchData;
+        return !!bd ? [
+            {
+                location: {
+                    Street: bd.Physical_Address1,
+                    City: bd.City,
+                },
+                title: bd.Branch_Information,
+                description: this.validationObj.idData.Bank_Name,
+            },
+        ] : [];
     }
 
     // Handle focus
-    focusBySelector(selector) {
+    focusBySelector(selector, focusOnly) {
         const elem = this.template.querySelector(selector);
-        if (elem) elem.focus();
+        if (elem) focusOnly ? elem.focus() : elem.select();
+    }
+
+    // Handle input focus
+    handleFocus(event) {
+        // Get the name of the input we have focused on
+        const field = event.target.name;
+        // Now focus based on the name
+        this.focusBySelector(`.${field}Input`);
     }
 
     // Handle input changes
@@ -344,16 +291,30 @@ export default class NzBankAccountValidator extends LightningElement {
         const field = event.target.name;
         // Get the new value of the input
         let value = event.target.value;
+        // Reset validation
+        this.validationObj = {};
         // Now set the value based on the name
         if (field === 'bank') {
             if (this.bank !== value) {
-                this.bank = value;
-                if (this.isValidBank) this.focusBySelector('.branchInput');
+                // Handle pasting a full bank account number 060998078516200 or 06-0998-0785162-00
+                if (value.length >= 12) {
+                    const fullAccObj = ValidationService.getPartsObject(value);
+                    this.bank = fullAccObj.id;
+                    this.branch = fullAccObj.branch;
+                    this.account = fullAccObj.base;
+                    this.suffix = fullAccObj.suffix;
+                    if (this.isValidNZBankAccount) this.focusBySelector('.copyButton', true);
+                } else {
+                    this.bank = value;
+                    if (this.isValidBank) this.focusBySelector('.branchInput');
+                }
+                this.showBranchInfo = false;
             }
         } else if (field === 'branch') {
             if (this.branch !== value) {
                 this.branch = value;
                 if (this.isValidBranch) this.focusBySelector('.accountInput');
+                this.showBranchInfo = false;
             }
         } else if (field === 'account') {
             if (this.account !== value) {
@@ -363,7 +324,7 @@ export default class NzBankAccountValidator extends LightningElement {
         } else if (field === 'suffix') {
             if (this.suffix !== value) {
                 this.suffix = value;
-                if (this.isValidSuffix) this.focusBySelector('.copyButton');
+                if (this.isValidSuffix) this.focusBySelector('.copyButton', true);
             }
         }
     }
@@ -399,36 +360,48 @@ export default class NzBankAccountValidator extends LightningElement {
     }
 
     // Update the record if it was edited
-    updateRecord() {
+    upsertBankDetails() {
+        this.isSaving = true;
         let record = {
             fields: {
-                Id: this.recordId,
-                Bank_Code__c: this.bank,
-                Bank_Branch_Code__c: this.branch,
-                Bank_Account_Code__c: this.account,
-                Bank_Suffix_Code__c: this.suffix,
-                Full_Bank_Account_Number__c: this.fullNZBankAccountNumber,
+                Id: this.recordId
             },
         };
+        if (this.bankField) record.fields[this.bankField] = this.bank;
+        if (this.branchField) record.fields[this.branchField] = this.branch;
+        if (this.accountField) record.fields[this.accountField] = this.account;
+        if (this.suffixField) record.fields[this.suffixField] = this.suffix;
+        if (this.fullBankAccountField) record.fields[this.fullBankAccountField] = this.fullNZBankAccountNumber;
+        if (this.bankNameField) record.fields[this.bankNameField] = this.bankName;
+        if (this.suffixNameField) record.fields[this.suffixNameField] = this.accountTypeName;
         updateRecord(record)
             .then(() => {
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: 'Success',
-                        message: 'Record has been updated',
-                        variant: 'success',
-                    }),
-                );
+                this.isSaving = false;
+                this.showToastEvent('Success', 'Record has been updated with the bank account details.', 'success');
             })
             .catch(error => {
-                console.error('error', error);
-                this.dispatchEvent(
-                    new ShowToastEvent({
-                        title: 'Error on save',
-                        message: error.message.body,
-                        variant: 'error',
-                    }),
-                );
+                this.isSaving = false;
+                this.error = 'Unknown error';
+                // Get the standard error
+                if (Array.isArray(error.body)) {
+                    this.error = error.body.map(e => e.message).join(', ');
+                } else if (typeof error.body.message === 'string') {
+                    this.error = error.body.message;
+                }
+                // Get any field errors
+                if (error.body.output && error.body.output.fieldErrors) {
+                    const allFieldErrors = error.body.output.fieldErrors;
+                    Object.keys(allFieldErrors).forEach((field) => {
+                        allFieldErrors[field].forEach((error) => {
+                            this.error += ' ' + Object.values(error).join(' - ');
+                        });
+                    });
+                }
+                console.error('upsertBankDetails error', this.error);
             });
+    };
+
+    toggleBranchInfo() {
+        this.showBranchInfo = !this.showBranchInfo;
     };
 }

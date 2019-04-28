@@ -4,8 +4,12 @@
  * @description  nzBankAccountValidator
  * 
  * CHANGE LOG
- * 2019-04-05 - Initial Setup of nzBankAccountValidator
+ * 2019-04-01 - Initial Setup of nzBankAccountValidator
  **/
 .hideLabel {
     color: white;
+}
+.slds-theme_error {
+    margin: 10px 0 !important;
+    border-radius: 5px !important;
 }

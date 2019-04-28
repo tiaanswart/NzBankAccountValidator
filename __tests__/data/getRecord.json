@@ -1,0 +1,25 @@
+{
+  "fields": {
+    "Account_Type__c": {
+      "value": "Cheque Account"
+    },
+    "Bank_Code__c": {
+      "value": "01"
+    },
+    "Bank_Branch_Code__c": {
+      "value": "0001"
+    },
+    "Bank_Account_Code__c": {
+      "value": "000001"
+    },
+    "Bank_Name__c": {
+      "value": "ANZ Bank New Zealand"
+    },
+    "Bank_Suffix_Code__c": {
+      "value": "00"
+    },
+    "Full_Bank_Account_Number__c": {
+      "value": "01-0001-000001-00"
+    }
+  }
+}
