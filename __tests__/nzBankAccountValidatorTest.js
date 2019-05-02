@@ -104,38 +104,39 @@ describe('@wire nz bank account test', () => {
         document.body.appendChild(element);
         getRecordWireAdapter.emit(mockGetRecord);
 
-        // Resolve a promise to wait for a rerender of the new content.
-        return Promise.resolve().then(() => {
-            // Finished Loading
-            const loadingSpinner = element.shadowRoot.querySelector('.loadingSpinner');
-            expect(loadingSpinner).toBeDefined();
-            expect(loadingSpinner).toBeNull();
+        setTimeout(() => {
+            // Resolve a promise to wait for a rerender of the new content.
+            return Promise.resolve().then(() => {
+                // Finished Loading
+                const loadingSpinner = element.shadowRoot.querySelector('.loadingSpinner');
+                expect(loadingSpinner).toBeDefined();
+                expect(loadingSpinner).toBeNull();
 
-            // No Error
-            const error = element.shadowRoot.querySelector('.slds-theme_error');
-            expect(error).toBeDefined();
-            expect(error).toBeNull();
+                // No Error
+                const error = element.shadowRoot.querySelector('.slds-theme_error');
+                expect(error).toBeDefined();
+                expect(error).toBeNull();
 
-            const bankInput = element.shadowRoot.querySelector('.bankInput');
-            debugger;
-            expect(bankInput).toBeDefined();
-            expect(bankInput).not.toBeNull();
-            expect(bankInput.textContent).toBe("01");
+                const bankInput = element.shadowRoot.querySelector('.bankInput');
+                expect(bankInput).toBeDefined();
+                expect(bankInput).not.toBeNull();
+                expect(bankInput.textContent).toBe("01");
 
-            const branchInput = element.shadowRoot.querySelector('.branchInput');
-            expect(branchInput).toBeDefined();
-            expect(branchInput).not.toBeNull();
-            expect(branchInput.textContent).toBe("0001");
+                const branchInput = element.shadowRoot.querySelector('.branchInput');
+                expect(branchInput).toBeDefined();
+                expect(branchInput).not.toBeNull();
+                expect(branchInput.textContent).toBe("0001");
 
-            const accountInput = element.shadowRoot.querySelector('.accountInput');
-            expect(accountInput).toBeDefined();
-            expect(accountInput).not.toBeNull();
-            expect(accountInput.textContent).toBe("000001");
+                const accountInput = element.shadowRoot.querySelector('.accountInput');
+                expect(accountInput).toBeDefined();
+                expect(accountInput).not.toBeNull();
+                expect(accountInput.textContent).toBe("000001");
 
-            const suffixInput = element.shadowRoot.querySelector('.suffixInput');
-            expect(suffixInput).toBeDefined();
-            expect(suffixInput).not.toBeNull();
-            expect(suffixInput.textContent).toBe("00");
-        });
+                const suffixInput = element.shadowRoot.querySelector('.suffixInput');
+                expect(suffixInput).toBeDefined();
+                expect(suffixInput).not.toBeNull();
+                expect(suffixInput.textContent).toBe("00");
+            });
+        }, 5000);
     });
 });
