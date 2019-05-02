@@ -17,6 +17,10 @@ import * as ValidationService from 'c/nzBankAccountValidationService';
 // Import the Bank Images
 import NZBankImages from '@salesforce/resourceUrl/NZBankImages';
 
+// Validation variables
+let lastValidationInput;
+let lastValidationPromise;
+
 // Export the Lightning Web Component
 export default class NzBankAccountValidator extends LightningElement {
 
@@ -52,6 +56,7 @@ export default class NzBankAccountValidator extends LightningElement {
 
     // Validation response
     @track validationObj;
+    @track lastFieldChanged;
 
     // Web Component Init
     connectedCallback() {
@@ -171,12 +176,33 @@ export default class NzBankAccountValidator extends LightningElement {
 
     // Use validation service
     validate() {
-        const validationResponse = ValidationService.validate(this.fullNZBankAccountNumber);
-        const self = this;
-        // Handle Promise and Non-Promise responses (Testing)
-        Promise.resolve(validationResponse).then(function(resp) {
-            self.validationObj = resp;
-        }).catch(err => console.error(err));
+        if (!lastValidationInput || lastValidationInput !== this.fullNZBankAccountNumber) {
+            lastValidationInput = this.fullNZBankAccountNumber;
+            console.log('### lastValidationInput', lastValidationInput);
+            lastValidationPromise = ValidationService.validate(lastValidationInput);
+            console.log('### lastValidationPromise', lastValidationPromise);
+            const self = this;
+            // Handle Promise and Non-Promise responses (Testing)
+            Promise.resolve(lastValidationPromise).then(function(resp) {
+                self.validationObj = resp;
+                console.log('### resp', resp);
+                if (self.lastFieldChanged) {
+                    if (self.lastFieldChanged === 'bank') {
+                        if (self.isValidNZBankAccount) {
+                            self.focusBySelector('.copyButton', true);
+                        } else if (self.isValidBank) {
+                            self.focusBySelector('.branchInput');
+                        }
+                    } else if (self.lastFieldChanged === 'branch') {
+                        if (self.isValidBranch) self.focusBySelector('.accountInput');
+                    } else if (self.lastFieldChanged === 'account') {
+                        if (self.isValidAccount) self.focusBySelector('.suffixInput');
+                    } else if (self.lastFieldChanged === 'suffix') {
+                        if (self.isValidSuffix) self.focusBySelector('.copyButton', true);
+                    }
+                }
+            }).catch(err => console.error(err));
+        }
     }
 
     // Get the NZ Bank Object
@@ -273,6 +299,7 @@ export default class NzBankAccountValidator extends LightningElement {
 
     // Handle focus
     focusBySelector(selector, focusOnly) {
+        if (this.lastFieldChanged) this.lastFieldChanged = null;
         const elem = this.template.querySelector(selector);
         if (elem) focusOnly ? elem.focus() : elem.select();
     }
@@ -291,8 +318,8 @@ export default class NzBankAccountValidator extends LightningElement {
         const field = event.target.name;
         // Get the new value of the input
         let value = event.target.value;
-        // Reset validation
-        this.validationObj = {};
+        // Track a change
+        let changed = false;
         // Now set the value based on the name
         if (field === 'bank') {
             if (this.bank !== value) {
@@ -303,29 +330,36 @@ export default class NzBankAccountValidator extends LightningElement {
                     this.branch = fullAccObj.branch;
                     this.account = fullAccObj.base;
                     this.suffix = fullAccObj.suffix;
-                    if (this.isValidNZBankAccount) this.focusBySelector('.copyButton', true);
+                    // We need to reset the validation fully
+                    lastValidationInput = null;
                 } else {
                     this.bank = value;
-                    if (this.isValidBank) this.focusBySelector('.branchInput');
                 }
-                this.showBranchInfo = false;
+                changed = true;
             }
         } else if (field === 'branch') {
             if (this.branch !== value) {
                 this.branch = value;
-                if (this.isValidBranch) this.focusBySelector('.accountInput');
-                this.showBranchInfo = false;
+                changed = true;
             }
         } else if (field === 'account') {
             if (this.account !== value) {
                 this.account = value;
-                if (this.isValidAccount) this.focusBySelector('.suffixInput');
+                changed = true;
             }
         } else if (field === 'suffix') {
             if (this.suffix !== value) {
                 this.suffix = value;
-                if (this.isValidSuffix) this.focusBySelector('.copyButton', true);
+                changed = true;
             }
+        }
+        if (changed) {
+            // Reset validation
+            this.validationObj = {};
+            // Set the field that was changed
+            this.lastFieldChanged = field;
+            // Hide the branch
+            this.showBranchInfo = false;
         }
     }
 
