@@ -178,14 +178,11 @@ export default class NzBankAccountValidator extends LightningElement {
     validate() {
         if (!lastValidationInput || lastValidationInput !== this.fullNZBankAccountNumber) {
             lastValidationInput = this.fullNZBankAccountNumber;
-            console.log('### lastValidationInput', lastValidationInput);
             lastValidationPromise = ValidationService.validate(lastValidationInput);
-            console.log('### lastValidationPromise', lastValidationPromise);
             const self = this;
             // Handle Promise and Non-Promise responses (Testing)
             Promise.resolve(lastValidationPromise).then(function(resp) {
                 self.validationObj = resp;
-                console.log('### resp', resp);
                 if (self.lastFieldChanged) {
                     if (self.lastFieldChanged === 'bank') {
                         if (self.isValidNZBankAccount) {
