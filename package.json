@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@salesforce/lwc-jest": "^0.6.2"
+    "@salesforce/lwc-jest": "^0.6.2",
+    "js-yaml": ">=3.13.1"
   }
 }
